@@ -1,46 +1,501 @@
 {% extends 'base.html' %}
-{% block title %}Register - SecureBank AI{% endblock %}
+{% block title %}New Customer Registration — SecureBank AI{% endblock %}
+
 {% block content_unauth %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4">
-                <div class="text-center mb-4">
-                    <i class="fas fa-user-plus fa-3x text-primary mb-2"></i>
-                    <h4 class="fw-bold">Create Account</h4>
-                    <p class="text-muted small">Join SecureBank AI today</p>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="full_name" class="form-control" placeholder="John Doe" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" name="phone" class="form-control" placeholder="9876543210">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Min. 8 characters" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 py-2">
-                        <i class="fas fa-user-plus me-2"></i> Register
-                    </button>
-                </form>
-                <p class="text-center mt-3 text-muted small">
-                    Already have an account? <a href="{{ url_for('auth.login') }}">Login</a>
-                </p>
-            </div>
-        </div>
+<div class="reg-bg">
+  <div class="login-grid-bg"></div>
+
+  <div class="reg-card">
+
+    <!-- Header -->
+    <div class="reg-header">
+      <div class="login-logo-icon" style="margin:0 auto 10px;"><i class="fas fa-user-shield" style="color:#fff;"></i></div>
+      <div class="login-heading" style="text-align:center;">New Customer Registration</div>
+      <div class="login-sub" style="margin-bottom:0;">SECURE ONBOARDING · KYC VERIFIED · INDIA</div>
     </div>
+
+    <!-- Progress bar -->
+    <div class="reg-progress" id="reg-progress">
+      <div class="reg-step-dot active" data-step="1"><i class="fas fa-user"></i><span>Personal</span></div>
+      <div class="reg-step-line"></div>
+      <div class="reg-step-dot" data-step="2"><i class="fas fa-id-card"></i><span>KYC</span></div>
+      <div class="reg-step-line"></div>
+      <div class="reg-step-dot" data-step="3"><i class="fas fa-lock"></i><span>Security</span></div>
+      <div class="reg-step-line"></div>
+      <div class="reg-step-dot" data-step="4"><i class="fas fa-check-double"></i><span>Verify</span></div>
+    </div>
+
+    <!-- Flash messages -->
+    {% for cat, msg in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ 'danger' if cat=='error' else cat }} alert-dismissible fade show" role="alert" style="font-size:12px;">
+      <i class="fas fa-exclamation-circle me-1"></i>{{ msg }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+    <form method="POST" id="reg-form" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <!-- STEP 1: Personal Details -->
+      <div class="reg-step" id="step-1">
+        <div class="reg-step-title"><i class="fas fa-user me-2" style="color:var(--accent);"></i>Personal Details</div>
+
+        <div class="reg-field">
+          <label class="form-label">Full Name <span class="req">*</span></label>
+          <input type="text" name="full_name" id="full_name" class="form-control"
+                 placeholder="As per Aadhaar card" autocomplete="name" required>
+          <div class="field-hint">Letters and spaces only, 3–100 characters</div>
+        </div>
+
+        <div class="reg-field">
+          <label class="form-label">Date of Birth <span class="req">*</span></label>
+          <input type="date" name="date_of_birth" id="date_of_birth" class="form-control"
+                 max="{{ now_date }}" required>
+          <div class="field-hint">Must be 18+ years of age</div>
+        </div>
+
+        <div class="reg-field">
+          <label class="form-label">Residential Address <span class="req">*</span></label>
+          <textarea name="address" id="address" class="form-control" rows="2"
+                    placeholder="House/Flat No., Street, City, State, PIN" required></textarea>
+          <div class="field-hint">Full address including PIN code (min 10 characters)</div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+          <button type="button" class="btn-cyber" style="width:auto;padding:10px 28px;" onclick="goStep(2)">
+            Next &nbsp;<i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: KYC Documents -->
+      <div class="reg-step" id="step-2" style="display:none;">
+        <div class="reg-step-title"><i class="fas fa-id-card me-2" style="color:var(--accent);"></i>KYC Documents</div>
+
+        <div class="reg-field">
+          <label class="form-label">Aadhaar Number <span class="req">*</span></label>
+          <input type="text" name="aadhaar_number" id="aadhaar_number" class="form-control mono"
+                 placeholder="1234 5678 9012" maxlength="14" autocomplete="off">
+          <div class="field-hint">12-digit Aadhaar UID (spaces allowed)</div>
+        </div>
+
+        <div class="reg-field">
+          <label class="form-label">PAN Number <span class="req">*</span></label>
+          <input type="text" name="pan_number" id="pan_number" class="form-control mono"
+                 placeholder="ABCDE1234F" maxlength="10" autocomplete="off"
+                 style="text-transform:uppercase;">
+          <div class="field-hint">Format: 5 letters · 4 digits · 1 letter (e.g. ABCDE1234F)</div>
+        </div>
+
+        <div style="background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:6px;font-size:11px;color:var(--text-muted);">
+          <i class="fas fa-info-circle me-1" style="color:var(--accent);"></i>
+          Your KYC details are encrypted with AES-256 and used only for identity verification per RBI guidelines.
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:space-between;margin-top:18px;">
+          <button type="button" class="btn-cyber-outline" style="width:auto;padding:10px 22px;" onclick="goStep(1)">
+            <i class="fas fa-arrow-left"></i> &nbsp;Back
+          </button>
+          <button type="button" class="btn-cyber" style="width:auto;padding:10px 28px;" onclick="goStep(3)">
+            Next &nbsp;<i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Password -->
+      <div class="reg-step" id="step-3" style="display:none;">
+        <div class="reg-step-title"><i class="fas fa-lock me-2" style="color:var(--accent);"></i>Account Security</div>
+
+        <div class="reg-field">
+          <label class="form-label">Password <span class="req">*</span></label>
+          <div style="position:relative;">
+            <input type="password" name="password" id="password" class="form-control"
+                   placeholder="Min. 12 characters" autocomplete="new-password">
+            <button type="button" class="pwd-toggle" onclick="togglePwd('password', this)" tabindex="-1">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="pwd-strength-wrap" id="pwd-strength-wrap" style="display:none;">
+            <div class="pwd-strength-bar">
+              <div class="pwd-strength-fill" id="pwd-strength-fill"></div>
+            </div>
+            <div class="pwd-strength-label" id="pwd-strength-label"></div>
+          </div>
+          <ul class="pwd-checklist" id="pwd-checklist">
+            <li id="chk-len"><i class="fas fa-circle"></i> At least 12 characters</li>
+            <li id="chk-upper"><i class="fas fa-circle"></i> Uppercase letter (A–Z)</li>
+            <li id="chk-lower"><i class="fas fa-circle"></i> Lowercase letter (a–z)</li>
+            <li id="chk-digit"><i class="fas fa-circle"></i> Number (0–9)</li>
+            <li id="chk-special"><i class="fas fa-circle"></i> Special character (!@#$…)</li>
+          </ul>
+        </div>
+
+        <div class="reg-field">
+          <label class="form-label">Confirm Password <span class="req">*</span></label>
+          <div style="position:relative;">
+            <input type="password" name="confirm_password" id="confirm_password" class="form-control"
+                   placeholder="Re-enter password" autocomplete="new-password">
+            <button type="button" class="pwd-toggle" onclick="togglePwd('confirm_password', this)" tabindex="-1">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div id="confirm-match" style="font-size:11px;margin-top:5px;display:none;"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:space-between;margin-top:18px;">
+          <button type="button" class="btn-cyber-outline" style="width:auto;padding:10px 22px;" onclick="goStep(2)">
+            <i class="fas fa-arrow-left"></i> &nbsp;Back
+          </button>
+          <button type="button" class="btn-cyber" style="width:auto;padding:10px 28px;" onclick="goStep(4)">
+            Next &nbsp;<i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Contact Verification -->
+      <div class="reg-step" id="step-4" style="display:none;">
+        <div class="reg-step-title"><i class="fas fa-shield-alt me-2" style="color:var(--accent);"></i>Contact Verification</div>
+
+        <!-- Mobile -->
+        <div class="reg-field">
+          <label class="form-label">Mobile Number <span class="req">*</span></label>
+          <div class="otp-input-row">
+            <div style="position:relative;flex:1;">
+              <span class="phone-prefix">+91</span>
+              <input type="tel" name="phone" id="phone" class="form-control mono"
+                     placeholder="9876543210" maxlength="10"
+                     style="padding-left:42px !important;" autocomplete="tel">
+            </div>
+            <button type="button" class="btn-otp-send" id="btn-send-mobile-otp" onclick="sendMobileOtp()">
+              <i class="fas fa-paper-plane me-1"></i>Send OTP
+            </button>
+          </div>
+          <div id="mobile-otp-row" style="display:none;margin-top:10px;">
+            <div class="otp-input-row">
+              <input type="text" id="mobile_otp_input" class="form-control mono"
+                     placeholder="6-digit OTP" maxlength="6"
+                     style="letter-spacing:6px;text-align:center;font-size:16px;font-weight:700;">
+              <button type="button" class="btn-otp-verify" id="btn-verify-mobile-otp" onclick="verifyMobileOtp()">
+                <i class="fas fa-check me-1"></i>Verify
+              </button>
+            </div>
+            <div id="mobile-otp-demo" class="demo-otp-box"></div>
+          </div>
+          <div id="mobile-verified-badge" class="verified-badge" style="display:none;">
+            <i class="fas fa-check-circle"></i> Mobile Number Verified
+          </div>
+          <div id="mobile-otp-msg" class="otp-msg"></div>
+        </div>
+
+        <!-- Email -->
+        <div class="reg-field">
+          <label class="form-label">Email Address <span class="req">*</span></label>
+          <div class="otp-input-row">
+            <input type="email" name="email" id="email" class="form-control"
+                   placeholder="you@example.com" style="flex:1;" autocomplete="email">
+            <button type="button" class="btn-otp-send" id="btn-send-email-otp" onclick="sendEmailOtp()">
+              <i class="fas fa-paper-plane me-1"></i>Send OTP
+            </button>
+          </div>
+          <div id="email-otp-row" style="display:none;margin-top:10px;">
+            <div class="otp-input-row">
+              <input type="text" id="email_otp_input" class="form-control mono"
+                     placeholder="6-digit OTP" maxlength="6"
+                     style="letter-spacing:6px;text-align:center;font-size:16px;font-weight:700;">
+              <button type="button" class="btn-otp-verify" id="btn-verify-email-otp" onclick="verifyEmailOtp()">
+                <i class="fas fa-check me-1"></i>Verify
+              </button>
+            </div>
+            <div id="email-otp-demo" class="demo-otp-box"></div>
+          </div>
+          <div id="email-verified-badge" class="verified-badge" style="display:none;">
+            <i class="fas fa-check-circle"></i> Email Address Verified
+          </div>
+          <div id="email-otp-msg" class="otp-msg"></div>
+        </div>
+
+        <!-- SENTINEL notice -->
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg-card2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-top:4px;">
+          <div style="color:var(--accent);font-size:15px;"><i class="fas fa-robot"></i></div>
+          <div style="font-size:11px;color:var(--text-muted);">
+            <b style="color:var(--accent);">SENTINEL</b> is monitoring this registration session.
+            Both mobile and email must be verified before account creation.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:space-between;margin-top:20px;">
+          <button type="button" class="btn-cyber-outline" style="width:auto;padding:10px 22px;" onclick="goStep(3)">
+            <i class="fas fa-arrow-left"></i> &nbsp;Back
+          </button>
+          <button type="submit" class="btn-cyber btn-success-cyber" id="btn-submit"
+                  style="width:auto;padding:10px 28px;" disabled>
+            <i class="fas fa-user-plus me-2"></i>Create Account
+          </button>
+        </div>
+      </div>
+
+    </form>
+
+    <div class="scan-line" style="margin-top:18px;"></div>
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text-muted);">
+      Already have an account?
+      <a href="{{ url_for('auth.login') }}" style="color:var(--accent);">Sign In</a>
+    </div>
+    <div style="display:flex;justify-content:center;gap:16px;margin-top:12px;">
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-lock me-1"></i>AES-256</span>
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-id-badge me-1"></i>KYC Verified</span>
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-gavel me-1"></i>RBI Compliant</span>
+    </div>
+
+  </div>
 </div>
+
+<script>
+const STEPS = 4;
+let currentStep = 1;
+
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+  document.getElementById(`step-${currentStep}`).style.display = 'none';
+  document.getElementById(`step-${n}`).style.display = 'block';
+  currentStep = n;
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(n) {
+  document.querySelectorAll('.reg-step-dot').forEach(dot => {
+    const s = parseInt(dot.dataset.step);
+    dot.classList.remove('active', 'done');
+    if (s < n) dot.classList.add('done');
+    if (s === n) dot.classList.add('active');
+  });
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    const name = document.getElementById('full_name').value.trim();
+    const dob  = document.getElementById('date_of_birth').value;
+    const addr = document.getElementById('address').value.trim();
+    if (name.length < 3)  { showStepError('Full name must be at least 3 characters.'); return false; }
+    if (!/^[A-Za-z ]{3,100}$/.test(name)) { showStepError('Full name must contain only letters and spaces.'); return false; }
+    if (!dob)             { showStepError('Date of birth is required.'); return false; }
+    const age = Math.floor((Date.now() - new Date(dob)) / 31557600000);
+    if (age < 18)         { showStepError('You must be at least 18 years old.'); return false; }
+    if (addr.length < 10) { showStepError('Address must be at least 10 characters.'); return false; }
+    return true;
+  }
+  if (step === 2) {
+    const aadhaar = document.getElementById('aadhaar_number').value.replace(/\s/g,'');
+    const pan     = document.getElementById('pan_number').value.trim().toUpperCase();
+    if (!/^\d{12}$/.test(aadhaar)) { showStepError('Aadhaar must be exactly 12 digits.'); return false; }
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) { showStepError('PAN format invalid (e.g. ABCDE1234F).'); return false; }
+    return true;
+  }
+  if (step === 3) {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirm_password').value;
+    const errs = checkPwdRules(pw);
+    if (errs.length) { showStepError(errs[0]); return false; }
+    if (pw !== cpw)  { showStepError('Passwords do not match.'); return false; }
+    return true;
+  }
+  return true;
+}
+
+function showStepError(msg) {
+  const existing = document.getElementById('step-toast');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'step-toast';
+  el.className = 'alert alert-danger';
+  el.style.cssText = 'font-size:12px;margin-bottom:10px;';
+  el.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${msg}`;
+  const form = document.getElementById('reg-form');
+  form.insertBefore(el, document.getElementById(`step-${currentStep}`));
+  setTimeout(() => el.remove(), 4000);
+}
+
+function checkPwdRules(pw) {
+  const rules = [];
+  if (pw.length < 12)              rules.push('At least 12 characters.');
+  if (!/[A-Z]/.test(pw))           rules.push('Uppercase letter required.');
+  if (!/[a-z]/.test(pw))           rules.push('Lowercase letter required.');
+  if (!/\d/.test(pw))              rules.push('Digit required.');
+  if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>\/?\\|`~]/.test(pw)) rules.push('Special character required.');
+  return rules;
+}
+
+document.getElementById('password').addEventListener('input', function () {
+  const pw = this.value;
+  const wrap = document.getElementById('pwd-strength-wrap');
+  wrap.style.display = pw.length ? 'block' : 'none';
+  const checks = {
+    len:     pw.length >= 12,
+    upper:   /[A-Z]/.test(pw),
+    lower:   /[a-z]/.test(pw),
+    digit:   /\d/.test(pw),
+    special: /[!@#$%^&*()\-_=+\[\]{};:'",.<>\/?\\|`~]/.test(pw),
+  };
+  Object.entries(checks).forEach(([k, ok]) => {
+    const li = document.getElementById(`chk-${k}`);
+    li.classList.toggle('ok', ok);
+    li.querySelector('i').className = ok ? 'fas fa-check-circle' : 'fas fa-circle';
+  });
+  const score = Object.values(checks).filter(Boolean).length;
+  const fill  = document.getElementById('pwd-strength-fill');
+  const label = document.getElementById('pwd-strength-label');
+  fill.style.width = (score / 5 * 100) + '%';
+  if (score <= 2) { fill.style.background = '#ef4444'; label.textContent = 'Weak'; label.style.color = '#ef4444'; }
+  else if (score === 3) { fill.style.background = '#f59e0b'; label.textContent = 'Fair'; label.style.color = '#f59e0b'; }
+  else if (score === 4) { fill.style.background = '#3b82f6'; label.textContent = 'Good'; label.style.color = '#3b82f6'; }
+  else { fill.style.background = '#10b981'; label.textContent = 'Strong'; label.style.color = '#10b981'; }
+});
+
+document.getElementById('confirm_password').addEventListener('input', function () {
+  const pw = document.getElementById('password').value;
+  const el = document.getElementById('confirm-match');
+  el.style.display = this.value.length ? 'block' : 'none';
+  if (this.value === pw) {
+    el.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Passwords match';
+    el.style.color = '#10b981';
+  } else {
+    el.innerHTML = '<i class="fas fa-times-circle" style="color:#ef4444;"></i> Passwords do not match';
+    el.style.color = '#ef4444';
+  }
+});
+
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  const isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  btn.querySelector('i').className = isText ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+
+document.getElementById('aadhaar_number').addEventListener('input', function () {
+  let v = this.value.replace(/\D/g, '').slice(0, 12);
+  this.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+});
+
+document.getElementById('pan_number').addEventListener('input', function () {
+  this.value = this.value.toUpperCase();
+});
+
+let mobileVerified = false;
+let emailVerified  = false;
+
+function checkSubmitGate() {
+  document.getElementById('btn-submit').disabled = !(mobileVerified && emailVerified);
+}
+
+async function sendMobileOtp() {
+  const phone = document.getElementById('phone').value.replace(/\D/g, '');
+  const msg   = document.getElementById('mobile-otp-msg');
+  const btn   = document.getElementById('btn-send-mobile-otp');
+  msg.textContent = '';
+  if (!/^[6-9]\d{9}$/.test(phone)) { setOtpMsg(msg, 'Enter a valid 10-digit Indian mobile number.', 'error'); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending…';
+  try {
+    const r = await fetch('/api/register/send-mobile-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrf_token]').value },
+      body: JSON.stringify({ phone })
+    });
+    const d = await r.json();
+    if (d.success) {
+      setOtpMsg(msg, d.message, 'success');
+      document.getElementById('mobile-otp-row').style.display = 'block';
+      if (d.demo_otp) {
+        const demoEl = document.getElementById('mobile-otp-demo');
+        demoEl.innerHTML = `<i class="fas fa-terminal me-1"></i><b>Demo OTP:</b> ${d.demo_otp} <span style="opacity:.6;font-size:10px;">(console printed)</span>`;
+        demoEl.style.display = 'block';
+      }
+      btn.innerHTML = '<i class="fas fa-redo me-1"></i>Resend'; btn.disabled = false;
+    } else { setOtpMsg(msg, d.message, 'error'); btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send OTP'; btn.disabled = false; }
+  } catch { setOtpMsg(msg, 'Network error.', 'error'); btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send OTP'; btn.disabled = false; }
+}
+
+async function verifyMobileOtp() {
+  const phone = document.getElementById('phone').value.replace(/\D/g, '');
+  const otp   = document.getElementById('mobile_otp_input').value.trim();
+  const msg   = document.getElementById('mobile-otp-msg');
+  const btn   = document.getElementById('btn-verify-mobile-otp');
+  if (otp.length !== 6) { setOtpMsg(msg, 'Enter the 6-digit OTP.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  try {
+    const r = await fetch('/api/register/verify-mobile-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrf_token]').value },
+      body: JSON.stringify({ phone, otp })
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('mobile-otp-row').style.display = 'none';
+      document.getElementById('mobile-otp-demo').style.display = 'none';
+      document.getElementById('btn-send-mobile-otp').style.display = 'none';
+      document.getElementById('phone').readOnly = true;
+      document.getElementById('mobile-verified-badge').style.display = 'flex';
+      setOtpMsg(msg, '', ''); mobileVerified = true; checkSubmitGate();
+    } else { setOtpMsg(msg, d.message, 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Verify'; }
+  } catch { setOtpMsg(msg, 'Network error.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Verify'; }
+}
+
+async function sendEmailOtp() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const msg   = document.getElementById('email-otp-msg');
+  const btn   = document.getElementById('btn-send-email-otp');
+  msg.textContent = '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setOtpMsg(msg, 'Enter a valid email address.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Sending…';
+  try {
+    const r = await fetch('/api/register/send-email-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrf_token]').value },
+      body: JSON.stringify({ email })
+    });
+    const d = await r.json();
+    if (d.success) {
+      setOtpMsg(msg, d.message, 'success');
+      document.getElementById('email-otp-row').style.display = 'block';
+      if (d.demo_otp) {
+        const demoEl = document.getElementById('email-otp-demo');
+        demoEl.innerHTML = `<i class="fas fa-terminal me-1"></i><b>Demo OTP:</b> ${d.demo_otp} <span style="opacity:.6;font-size:10px;">(console printed)</span>`;
+        demoEl.style.display = 'block';
+      }
+      btn.innerHTML = '<i class="fas fa-redo me-1"></i>Resend'; btn.disabled = false;
+    } else { setOtpMsg(msg, d.message, 'error'); btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send OTP'; btn.disabled = false; }
+  } catch { setOtpMsg(msg, 'Network error.', 'error'); btn.innerHTML = '<i class="fas fa-paper-plane me-1"></i>Send OTP'; btn.disabled = false; }
+}
+
+async function verifyEmailOtp() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const otp   = document.getElementById('email_otp_input').value.trim();
+  const msg   = document.getElementById('email-otp-msg');
+  const btn   = document.getElementById('btn-verify-email-otp');
+  if (otp.length !== 6) { setOtpMsg(msg, 'Enter the 6-digit OTP.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  try {
+    const r = await fetch('/api/register/verify-email-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrf_token]').value },
+      body: JSON.stringify({ email, otp })
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('email-otp-row').style.display = 'none';
+      document.getElementById('email-otp-demo').style.display = 'none';
+      document.getElementById('btn-send-email-otp').style.display = 'none';
+      document.getElementById('email').readOnly = true;
+      document.getElementById('email-verified-badge').style.display = 'flex';
+      setOtpMsg(msg, '', ''); emailVerified = true; checkSubmitGate();
+    } else { setOtpMsg(msg, d.message, 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Verify'; }
+  } catch { setOtpMsg(msg, 'Network error.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check me-1"></i>Verify'; }
+}
+
+function setOtpMsg(el, text, type) {
+  el.textContent = text;
+  el.className   = 'otp-msg' + (type === 'error' ? ' otp-msg-error' : type === 'success' ? ' otp-msg-success' : '');
+}
+</script>
 {% endblock content_unauth %}
