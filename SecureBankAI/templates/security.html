@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Security Center - SecureBank AI{% endblock %}
+{% block page_title %}Security Center{% endblock %}
+{% block content %}
+<div class="row g-4 mt-1">
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-center p-4">
+            <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+            <h6 class="fw-bold">Security Score</h6>
+            <h3 class="text-success fw-bold">87%</h3>
+            <p class="text-muted small">Good</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card border-0 shadow-sm text-center p-4">
+            <i class="fas fa-lock fa-3x text-primary mb-3"></i>
+            <h6 class="fw-bold">MFA Status</h6>
+            <h6 class="text-success">Enabled</h6>
+            <p class="text-muted small">OTP via login</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <a href="{{ url_for('security.fraud_dashboard') }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm text-center p-4 h-100">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h6 class="fw-bold text-dark">Fraud Alerts</h6>
+                <p class="text-muted small">View flagged transactions</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <a href="{{ url_for('security.vault') }}" class="text-decoration-none">
+            <div class="card border-0 shadow-sm text-center p-4 h-100">
+                <i class="fas fa-vault fa-3x text-info mb-3"></i>
+                <h6 class="fw-bold text-dark">Secure Vault</h6>
+                <p class="text-muted small">Store sensitive info</p>
+            </div>
+        </a>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="mb-0 fw-bold"><i class="fas fa-shield-alt me-2 text-primary"></i>Security Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Never share your OTP or password with anyone.</li>
+                    <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>RBI/Banks never ask for your PIN or OTP.</li>
+                    <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Always verify before transferring money to new contacts.</li>
+                    <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Check your statements regularly for unauthorized transactions.</li>
+                    <li class="list-group-item"><i class="fas fa-check-circle text-success me-2"></i>Use strong, unique passwords for your banking account.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

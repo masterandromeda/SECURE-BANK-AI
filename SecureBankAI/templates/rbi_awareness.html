@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}RBI Awareness - SecureBank AI{% endblock %}
+{% block page_title %}RBI Awareness{% endblock %}
+{% block content %}
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Important:</strong> RBI and banks NEVER ask for your OTP, PIN, CVV, or full card details over phone/email/SMS.
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="fw-bold text-danger mb-3"><i class="fas fa-ban me-2"></i>Common Frauds</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>KYC update scams via fake links</li>
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Fake UPI collect requests</li>
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Phishing emails impersonating banks</li>
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Screen sharing scams</li>
+                    <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Lottery / prize money frauds</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="fw-bold text-success mb-3"><i class="fas fa-shield-alt me-2"></i>Stay Safe</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Register on DND to block spam calls</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Report fraud: 1930 (Cyber Crime Helpline)</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Report online: cybercrime.gov.in</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Block lost card immediately via bank helpline</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Enable SMS/email alerts for all transactions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

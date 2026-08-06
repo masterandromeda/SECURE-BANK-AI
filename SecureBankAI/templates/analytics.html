@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Analytics - SecureBank AI{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block content %}
+<div class="row g-4 mt-1">
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-arrow-down fa-lg text-success"></i></div>
+            <div>
+                <div class="stat-label">Total Credits</div>
+                <div class="stat-value text-success">₹{{ "{:,.2f}".format(credits) }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-arrow-up fa-lg text-danger"></i></div>
+            <div>
+                <div class="stat-label">Total Debits</div>
+                <div class="stat-value text-danger">₹{{ "{:,.2f}".format(debits) }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-white border-0 py-3">
+        <h6 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2 text-primary"></i>Spending by Category</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                    {% for txn in txns %}
+                    <tr>
+                        <td class="text-muted small">{{ txn.created_at.strftime('%d %b %Y') }}</td>
+                        <td>{{ txn.description or '-' }}</td>
+                        <td><span class="badge bg-light text-dark">{{ txn.category or 'other' }}</span></td>
+                        <td class="fw-semibold text-{{ 'success' if txn.transaction_type == 'credit' else 'danger' }}">
+                            {{ '+' if txn.transaction_type == 'credit' else '-' }}₹{{ "{:,.2f}".format(txn.amount) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center text-muted py-4">No data yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

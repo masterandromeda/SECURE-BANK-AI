@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Privacy - SecureBank AI{% endblock %}
+{% block page_title %}Privacy Dashboard{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3"><i class="fas fa-user-shield me-2 text-primary"></i>Privacy &amp; Data</h5>
+                <p class="text-muted">We value your privacy. Here's how we handle your data:</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Your data is encrypted with AES-256.</li>
+                    <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>We never sell your personal data to third parties.</li>
+                    <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>All communications are over HTTPS/TLS.</li>
+                    <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>You can request data deletion at any time.</li>
+                    <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>MFA is enforced on every login.</li>
+                </ul>
+                <div class="mt-4">
+                    <h6 class="fw-bold">Your Stored Information</h6>
+                    <table class="table table-sm">
+                        <tr><td class="text-muted">Name</td><td>{{ current_user.full_name }}</td></tr>
+                        <tr><td class="text-muted">Email</td><td>{{ current_user.email }}</td></tr>
+                        <tr><td class="text-muted">Phone</td><td>{{ current_user.phone or '-' }}</td></tr>
+                        <tr><td class="text-muted">Account Since</td><td>{{ current_user.created_at.strftime('%d %b %Y') }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
