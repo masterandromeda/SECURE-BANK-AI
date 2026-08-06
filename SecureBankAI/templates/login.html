@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Login — SecureBank AI Sentinel{% endblock %}
+{% block content_unauth %}
+<div class="login-bg">
+  <div class="login-grid-bg"></div>
+  <div style="position:absolute;top:0;left:0;right:0;pointer-events:none;"><div class="scan-line"></div></div>
+  <div class="login-card">
+    <div class="login-logo mb-1">
+      <div class="login-logo-icon"><i class="fas fa-shield-alt" style="color:#fff;"></i></div>
+    </div>
+    <div style="text-align:center;margin-bottom:4px;">
+      <div class="login-heading">SecureBank AI</div>
+    </div>
+    <div class="login-sub">SENTINEL SECURITY PLATFORM · INDIA</div>
+    <div id="login-risk-box" class="risk-panel" style="display:none;">
+      <div class="risk-header"><i class="fas fa-exclamation-triangle"></i> SECURITY ALERT &nbsp;
+        <span id="risk-level-badge" class="badge-cyber badge-danger">HIGH</span>
+      </div>
+      <div class="risk-detail" id="risk-detail-text"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--text-muted);">
+        <span id="risk-attempts"></span><span id="risk-time" class="mono"></span>
+      </div>
+    </div>
+    {% if step == 'otp' %}
+    {% if otp_display %}
+    <div class="otp-box">
+      <div class="otp-label"><i class="fas fa-key me-1"></i> YOUR ONE-TIME PASSWORD</div>
+      <div class="otp-value">{{ otp_display }}</div>
+      <div class="otp-label" style="margin-top:6px;">Valid for this session only · Do not share</div>
+    </div>
+    {% endif %}
+    <div class="agent-welcome">
+      <div class="agent-avatar"><i class="fas fa-robot"></i></div>
+      <div class="agent-msg"><b>SENTINEL Agent Online</b><br>Identity verification required. Enter OTP to authenticate.</div>
+    </div>
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="step" value="otp">
+      <div style="margin-bottom:16px;">
+        <label class="form-label">One-Time Password (OTP)</label>
+        <input type="text" name="otp" class="form-control"
+               style="text-align:center;letter-spacing:8px;font-size:20px;font-weight:700;"
+               placeholder="• • • • • •" maxlength="6" autofocus required>
+      </div>
+      <button type="submit" class="btn-cyber"><i class="fas fa-shield-alt me-2"></i> Verify &amp; Authenticate</button>
+    </form>
+    <div style="text-align:center;margin-top:14px;">
+      <a href="{{ url_for('auth.login') }}" style="font-size:12px;color:var(--text-muted);">← Back to Login</a>
+    </div>
+    {% else %}
+    <form method="POST" id="login-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="step" value="credentials">
+      <div style="margin-bottom:14px;">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" id="login-email" class="form-control" placeholder="you@bank.in" required autofocus>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="········" required>
+      </div>
+      <button type="submit" class="btn-cyber"><i class="fas fa-fingerprint me-2"></i> Authenticate Securely</button>
+    </form>
+    <div class="scan-line" style="margin-top:14px;"></div>
+    <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-muted);">New to SecureBank AI?
+      <a href="{{ url_for('auth.register') }}" style="color:var(--accent);">Create Account</a>
+    </div>
+    <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;">
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-lock me-1"></i>256-bit SSL</span>
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-shield-alt me-1"></i>MFA Enforced</span>
+      <span style="font-size:10px;color:var(--text-dim);"><i class="fas fa-robot me-1"></i>AI Monitored</span>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+(function(){
+  const form = document.getElementById('login-form');
+  if (!form) return;
+  const hasDanger = document.querySelector('.alert-danger');
+  if (hasDanger) {
+    const emailInput = document.getElementById('login-email');
+    const email = emailInput ? emailInput.value : '';
+    if (typeof checkLoginRisk === 'function') checkLoginRisk(email);
+  }
+})();
+</script>
+{% endblock content_unauth %}

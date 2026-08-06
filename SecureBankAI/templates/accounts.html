@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}My Accounts - SecureBank AI{% endblock %}
+{% block page_title %}My Accounts{% endblock %}
+{% block content %}
+<div class="row g-4 mt-1">
+    {% for account in accounts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <span class="badge bg-primary">{{ account.account_type.title() }}</span>
+                    <span class="badge bg-{{ 'success' if account.is_active else 'secondary' }}">
+                        {{ 'Active' if account.is_active else 'Inactive' }}
+                    </span>
+                </div>
+                <h5 class="fw-bold text-success mb-1">₹{{ "{:,.2f}".format(account.balance) }}</h5>
+                <p class="text-muted small mb-2">Available Balance</p>
+                <hr>
+                <div class="small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Account No.</span>
+                        <span class="fw-semibold">{{ account.account_number }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">IFSC Code</span>
+                        <span class="fw-semibold">{{ account.ifsc_code }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Branch</span>
+                        <span class="fw-semibold">{{ account.branch }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12"><div class="alert alert-info">No accounts found.</div></div>
+    {% endfor %}
+</div>
+{% endblock %}
