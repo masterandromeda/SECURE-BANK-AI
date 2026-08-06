@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Withdraw — Secure Bank{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5 col-sm-10">
+    <div class="card p-4">
+      <div class="card-body">
+        <h2 class="card-title mb-1">Withdraw Funds</h2>
+        <p class="text-muted mb-3">Current Balance: <strong>${{ "%.2f"|format(balance) }}</strong></p>
+        <form action="{{ url_for('withdraw_route') }}" method="POST" novalidate>
+          <div class="mb-3">
+            <label for="amount" class="form-label fw-semibold">Amount ($)</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="0.00" min="0.01" step="0.01" required />
+          </div>
+          <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary btn-lg">Withdraw</button>
+          </div>
+        </form>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary w-100">← Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
